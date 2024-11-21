@@ -9,17 +9,27 @@ import {
 } from './definitions';
 import { formatCurrency } from './utils';
 
+// ...
+
+// Fetch the last 5 invoices, sorted by date
+const data = await sql<LatestInvoiceRaw>`
+  SELECT invoices.amount, customers.name, customers.image_url, customers.email
+  FROM invoices
+  JOIN customers ON invoices.customer_id = customers.id
+  ORDER BY invoices.date DESC
+  LIMIT 5`;
+
 export async function fetchRevenue() {
   try {
     // Artificially delay a response for demo purposes.
     // Don't do this in production :)
 
-    // console.log('Fetching revenue data...');
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
+     console.log('Fetching revenue data...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     const data = await sql<Revenue>`SELECT * FROM revenue`;
 
-    // console.log('Data fetch completed after 3 seconds.');
+   console.log('Data fetch completed after 3 seconds.');
 
     return data.rows;
   } catch (error) {
@@ -29,6 +39,8 @@ export async function fetchRevenue() {
 }
 
 export async function fetchLatestInvoices() {
+
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   try {
     const data = await sql<LatestInvoiceRaw>`
       SELECT invoices.amount, customers.name, customers.image_url, customers.email, invoices.id
@@ -141,6 +153,7 @@ export async function fetchInvoicesPages(query: string) {
 }
 
 export async function fetchInvoiceById(id: string) {
+  
   try {
     const data = await sql<InvoiceForm>`
       SELECT
@@ -158,6 +171,7 @@ export async function fetchInvoiceById(id: string) {
       amount: invoice.amount / 100,
     }));
 
+    console.log(invoice); // Invoice is an empty array []
     return invoice[0];
   } catch (error) {
     console.error('Database Error:', error);
